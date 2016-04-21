@@ -51,3 +51,28 @@ exports.create = function(dog, cb) {
     });
   });
 };
+
+exports.findById = function(id, cb) {
+  if(!id) return cb('id required.');
+
+  this.findAll((err, dogs) => {
+    if(err) return cb(err);
+
+    var dog = dogs.filter(dog => dog.id === id)[0];
+    
+    cb(null, dog);
+  });
+};
+
+
+
+
+
+
+
+
+
+
+
+
+

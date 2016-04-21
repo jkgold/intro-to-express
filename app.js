@@ -18,6 +18,11 @@ app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+app.use(express.static('public'));
+
+app.set('view engine', 'jade');
+
+
 // routes
 app.route('/api/dogs')
   .get((req, res, next) => {
@@ -34,30 +39,36 @@ app.route('/api/dogs')
 app.route('/api/dogs/:id')
   .get((req, res, next) => {
     // get one dog
-
     var id = req.params.id;
 
-    // Dog.findById(id, (err, dog) => {
+    Dog.findById(id, (err, dog) => {
+      if(err || !dog) {
+        return res.status(400).send(err || 'Dog not found.');
+      }
+      res.send(dog);
+    });
 
-    // });
-
-    res.send();
   })
   .delete((req, res, next) => {
     var id = req.params.id;
-    var len = dogs.length;
-    dogs = dogs.filter(dog => dog.id !== id);
 
-    if(len === dogs.length) {  // we didn't remove any dogs
-      return res.status(400).send('Dog not found, dog.');
-    }
+    // Dog.removeById(id, err => {
 
-    res.send();
+    // });
+
+    // var len = dogs.length;
+    // dogs = dogs.filter(dog => dog.id !== id);
+
+    // if(len === dogs.length) {  // we didn't remove any dogs
+    //   return res.status(400).send('Dog not found, dog.');
+    // }
+
+    // res.send();
   })
 
 
 app.get('/', (req, res, next) => {
-  res.send('GET /');
+  res.render('home', {text: 'whatever you like'});
 });
 
 
