@@ -1,15 +1,14 @@
 'use strict';
 
 const PORT = process.env.PORT || 3000;
-var dogs = [
-  {name: 'Fluffy', kind: 'poodle'},
-  {name: 'Doofus', kind: 'lab'}
-];
 
 // requires:   loading libraries
 var express = require('express');
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
+var uuid = require('uuid');
+
+var Dog = require('./models/dog');
 
 // app declaration
 var app = express();
@@ -22,22 +21,39 @@ app.use(bodyParser.json());
 // routes
 app.route('/api/dogs')
   .get((req, res, next) => {
-
-    res.json(dogs);
+    Dog.findAll((err, dogs) => {
+      res.status(err ? 400 : 200).send(err || dogs);
+    });
   })
   .post((req, res, next) => {
-    if(!req.body.name || !req.body.kind) {
-      return res.status(400).send('Missing required field.');
-    }
+    Dog.create(req.body, err => {
+      res.status(err ? 400 : 200).send(err || null);
+    });
+  });
 
-    var dog = {
-      name: req.body.name,
-      kind: req.body.kind
-    }
-    dogs.push(dog)
+app.route('/api/dogs/:id')
+  .get((req, res, next) => {
+    // get one dog
+
+    var id = req.params.id;
+
+    // Dog.findById(id, (err, dog) => {
+
+    // });
 
     res.send();
-  });
+  })
+  .delete((req, res, next) => {
+    var id = req.params.id;
+    var len = dogs.length;
+    dogs = dogs.filter(dog => dog.id !== id);
+
+    if(len === dogs.length) {  // we didn't remove any dogs
+      return res.status(400).send('Dog not found, dog.');
+    }
+
+    res.send();
+  })
 
 
 app.get('/', (req, res, next) => {
