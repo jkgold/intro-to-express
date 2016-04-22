@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+html(lang="en")
+head
+  meta(charset="UTF-8")
+  title Pug
+body
+  h1 BOARD~!
+  
+  table
+    thead
+      tr
+        th Time
+        th Body
+    tbody
+      each message in messages
+        tr
+          td= message.time
+          td= message.body
+
+
+form(method='POST', action='/api/dogs')
+  input(type='text', name='name')
+  input(type='text', name='kind')
+  button Submit
+

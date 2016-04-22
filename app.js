@@ -20,21 +20,69 @@ app.use(bodyParser.json());
 
 app.use(express.static('public'));
 
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 
 // routes
-app.route('/api/dogs')
-  .get((req, res, next) => {
-    Dog.findAll((err, dogs) => {
-      res.status(err ? 400 : 200).send(err || dogs);
-    });
-  })
-  .post((req, res, next) => {
-    Dog.create(req.body, err => {
-      res.status(err ? 400 : 200).send(err || null);
-    });
+
+
+app.get('/', (req, res, next) => {
+
+  console.log('req.query:', req.query);
+
+  res.render('test', {
+    text: 'whatever you like',
+    dogs: ['fluffy', 'king']
   });
+
+  // look for a view file in views directory
+  // (view file will end in '.pug')
+  // render it into html
+  // respond with that html
+
+});
+
+var messages = [{
+  time: 'now',
+  body: 'hey there!'
+},{
+  time: 'before',
+  body: 'sup.'
+}];
+
+
+// app.get('/board', (req, res, next) => {
+//   res.render('board', {messages: messages} );
+// });
+
+
+app.route('/board')
+  .get((req, res, next) => {
+    res.render('board', {messages: messages} );
+  })
+
+
+
+
+
+
+// app.route('/api/dogs')
+app.get('/api/dogs', (req, res, next) => {
+  Dog.findAll((err, dogs) => {
+    res.status(err ? 400 : 200).send(err || dogs);
+  });
+})
+
+app.post('/api/dogs', (req, res, next) => {
+  Dog.create(req.body, err => {
+    if(err) {
+      res.status(400).send(err);
+    } else {
+      res.redirect('/')
+    }
+  });
+});
+
 
 app.route('/api/dogs/:id')
   .get((req, res, next) => {
@@ -66,10 +114,6 @@ app.route('/api/dogs/:id')
     // res.send();
   })
 
-
-app.get('/', (req, res, next) => {
-  res.render('home', {text: 'whatever you like'});
-});
 
 
 // 404 handler
